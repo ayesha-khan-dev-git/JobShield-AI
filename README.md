@@ -28,3 +28,13 @@ JobShield AI is an intelligent threat detection system designed to identify frau
    ```bash
    git clone [https://github.com/ayesha-khan-dev-git/JobShield-AI.git](https://github.com/ayesha-khan-dev-git/JobShield-AI.git)
    cd JobShield-AI
+
+   Install Dependencies:
+   pip install fastapi uvicorn scikit-learn pydantic
+
+   Launch the Application:
+Double-click start_jobshield.bat OR run:
+
+uvicorn app:app --reload
+
+
