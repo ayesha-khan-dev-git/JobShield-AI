@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobShield AI — Threat Intelligence Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+        }
+        .neon-glow-red {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
+        }
+        .neon-glow-green {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-10">
+
+    <!-- Navbar -->
+    <nav class="border-b border-gray-800 bg-gray-900/50 backdrop-blur-md sticky top-0 z-50 px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <div class="p-2 bg-blue-600/20 text-blue-500 rounded-lg border border-blue-500/30">
+                <i class="fa-solid fa-shield-halved text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-wide text-white">JobShield <span class="text-blue-500 text-xs px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">AI PRO</span></h1>
+                <p class="text-xs text-gray-400">Enterprise AI Job Scam Detection System</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="flex items-center text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span> FastAPI Engine Live
+            </span>
+        </div>
+    </nav>
+
+    <!-- Main Content Grid -->
+    <div class="max-w-7xl mx-auto px-6 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Input Form (5 Cols) -->
+        <div class="lg:col-span-5 space-y-6">
+            <div class="glass-card p-6">
+                <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <i class="fa-solid fa-magnifying-glass text-blue-400 mr-2"></i> Real-Time Job Analysis
+                </h2>
+                
+                <form id="analyzeForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">JOB TITLE</label>
+                        <input type="text" id="jobTitle" required placeholder="e.g. Remote Data Entry Specialist" 
+                            class="w-full bg-gray-900/80 border border-gray-700/60 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 transition text-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">COMPANY NAME (OPTIONAL)</label>
+                        <input type="text" id="companyName" placeholder="e.g. Global Tech Solutions" 
+                            class="w-full bg-gray-900/80 border border-gray-700/60 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 transition text-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">JOB POSTING DESCRIPTION</label>
+                        <textarea id="jobDescription" rows="5" required placeholder="Paste full requirements, salary details, or posting text here..." 
+                            class="w-full bg-gray-900/80 border border-gray-700/60 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 transition text-white"></textarea>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg shadow-lg shadow-blue-600/30 transition flex justify-center items-center">
+                        <i class="fa-solid fa-microchip mr-2"></i> Run AI Fraud Detection
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Column: Live Results & Analytics (7 Cols) -->
+        <div class="lg:col-span-7 space-y-6">
+            
+            <!-- Result Display Card -->
+            <div class="glass-card p-6" id="resultCard">
+                <h2 class="text-lg font-semibold text-white mb-4 flex items-center justify-between">
+                    <span><i class="fa-solid fa-chart-line text-purple-400 mr-2"></i> Fraud Risk Evaluation</span>
+                    <span id="statusBadge" class="text-xs font-semibold px-3 py-1 rounded-full bg-gray-800 text-gray-400">Awaiting Input</span>
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center my-4">
+                    <!-- Probability Score Display -->
+                    <div class="text-center p-6 bg-gray-900/50 rounded-xl border border-gray-800">
+                        <span class="text-xs text-gray-400 font-medium uppercase tracking-wider">Scam Probability</span>
+                        <div id="probScore" class="text-5xl font-black text-white mt-2 mb-1">0%</div>
+                        <p id="riskLabel" class="text-sm text-gray-400 font-medium">No Analysis Performed</p>
+                    </div>
+
+                    <!-- Visual Progress Gauge -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-xs text-gray-400">
+                            <span>Safe (Low)</span>
+                            <span>Suspicious</span>
+                            <span>Critical Risk</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
+                            <div id="riskMeter" class="bg-blue-500 h-3 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                        <p id="riskExplanation" class="text-xs text-gray-400 mt-2">
+                            Enter job posting details on the left and click analyze to test against the ML fraud model.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historical Analytics Table -->
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-white flex items-center">
+                        <i class="fa-solid fa-database text-emerald-400 mr-2"></i> Audit History (SQLite)
+                    </h2>
+                    <button onclick="loadHistory()" class="text-xs text-gray-400 hover:text-white bg-gray-800 px-3 py-1.5 rounded-md border border-gray-700 transition">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> Refresh
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-gray-300">
+                        <thead class="bg-gray-900/80 text-gray-400 uppercase border-b border-gray-800">
+                            <tr>
+                                <th class="p-3">Title</th>
+                                <th class="p-3">Risk Score</th>
+                                <th class="p-3">Category</th>
+                                <th class="p-3">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable" class="divide-y divide-gray-800">
+                            <tr>
+                                <td colspan="4" class="p-4 text-center text-gray-500">No predictions logged yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Script for API Communication -->
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        // Form Submit Handler
+        document.getElementById("analyzeForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById("submitBtn");
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Analyzing...`;
+
+            const payload = {
+                title: document.getElementById("jobTitle").value,
+                company_name: document.getElementById("companyName").value,
+                description: document.getElementById("jobDescription").value
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/analyze`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    updateUI(data);
+                    loadHistory();
+                } else {
+                    alert("Error processing request.");
+                }
+            } catch (err) {
+                alert("Cannot connect to FastAPI Backend. Ensure 'uvicorn app:app --reload' is running!");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-microchip mr-2"></i> Run AI Fraud Detection`;
+            }
+        });
+
+        // UI Update Function
+        function updateUI(data) {
+            const prob = data.scam_probability_percent;
+            const risk = data.risk_level;
+
+            document.getElementById("probScore").innerText = `${prob}%`;
+            document.getElementById("riskMeter").style.width = `${prob}%`;
+            document.getElementById("riskLabel").innerText = `Assessed Risk: ${risk}`;
+
+            const badge = document.getElementById("statusBadge");
+            const meter = document.getElementById("riskMeter");
+            const exp = document.getElementById("riskExplanation");
+
+            if (risk === "High") {
+                badge.className = "text-xs font-semibold px-3 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/30";
+                badge.innerText = "CRITICAL SCAM RISK";
+                meter.className = "bg-red-500 h-3 rounded-full transition-all duration-1000";
+                exp.innerText = "🚨 High Scam Probability detected. Posting contains red flags like fee demands or unverified origins.";
+            } else if (risk === "Medium") {
+                badge.className = "text-xs font-semibold px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
+                badge.innerText = "MODERATE SUSPICION";
+                meter.className = "bg-yellow-500 h-3 rounded-full transition-all duration-1000";
+                exp.innerText = "⚠️ Moderate risk. Proceed with caution and verify company contact details.";
+            } else {
+                badge.className = "text-xs font-semibold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                badge.innerText = "VERIFIED / LOW RISK";
+                meter.className = "bg-emerald-500 h-3 rounded-full transition-all duration-1000";
+                exp.innerText = "✅ Pattern analysis shows standard hiring wording. No major scam flags triggered.";
+            }
+        }
+
+        // Fetch History
+        async function loadHistory() {
+            try {
+                const res = await fetch(`${API_BASE}/history`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const table = document.getElementById("historyTable");
+                    
+                    if (data.recent_searches.length === 0) {
+                        table.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">No predictions logged yet.</td></tr>`;
+                        return;
+                    }
+
+                    table.innerHTML = data.recent_searches.map(item => `
+                        <tr class="hover:bg-gray-800/40">
+                            <td class="p-3 font-medium text-white">${item.title}</td>
+                            <td class="p-3">${item.scam_probability}%</td>
+                            <td class="p-3">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                                    item.risk_level === 'High' ? 'bg-red-500/20 text-red-400' : 
+                                    item.risk_level === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-emerald-500/20 text-emerald-400'
+                                }">${item.risk_level}</span>
+                            </td>
+                            <td class="p-3 text-gray-500">${item.timestamp}</td>
+                        </tr>
+                    `).join("");
+                }
+            } catch (err) {
+                console.error("Failed to fetch history:", err);
+            }
+        }
+
+        // Load history on page load
+        loadHistory();
+    </script>
+</body>
+</html>
